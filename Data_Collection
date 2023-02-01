@@ -1,0 +1,39 @@
+import pandas as pd 
+import yfinance as yf
+import numpy as np 
+import requests_cache
+class Data_Collection:
+    def save(data):
+        ''' The funciton is used for the coversion of DataFrame into csv file \n
+        It stores the data in the system'''
+        #Changing the data into Panda DataFrame
+        df = pd.DataFrame(data)
+        # Conversion of Pandas into csv file
+        df.to_csv('fetched.csv', header = True)
+    #using yfinace API 
+    def fetch(name):
+        ''' Fetches the data from yfinance with tocker name \n
+        Display all the data provided by the tockername '''
+    # Ticker Module
+        session = requests_cache.CachedSession('yfinance.cache')
+        session.headers['User-agent'] = 'my-program/1.0'
+        ticker = yf.Ticker(name, session = session)
+
+    # The scraped response will be stored in the cache
+        ticker.actions
+        data = yf.download(name, start="2021-01-01", end="2021-12-30")
+    # Convert the datainto csv file
+        #save(data)
+    # Display of Data
+        return data[:]
+
+   
+class Display:
+    '''Funciton to display data in the form of Table
+    '''
+    pd.set_option('display.max_rows',None)
+    viewdata = pd.read_csv(r"C:\Users\owner\fetched.csv")
+    #Dispaly the data 
+    print(viewdata)
+
+Display()
