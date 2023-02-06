@@ -15,8 +15,8 @@ class DataStorage:
         self.s3 = boto3.resource(
             service_name='s3',
             region_name='ca-central-1',
-            aws_access_key_id='AKIAQLIFTMJPM5O3Y4DU',
-            aws_secret_access_key='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'
+            aws_access_key_id='<add-key-id-here>',
+            aws_secret_access_key='<add-secret-key-here>'
         )
 
     def list_bucket(self):
