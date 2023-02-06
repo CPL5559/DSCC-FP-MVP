@@ -1,0 +1,4 @@
+prettytable==3.6.0
+pandas==1.5.3
+yfinance==0.2.9
+requests-cache==0.9.8
