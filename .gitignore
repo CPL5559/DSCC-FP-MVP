@@ -1,5 +1,7 @@
 #Extra constraints
-.csv
+fetched.csv
+yfinance.cache
+DSCC-FP-MVP-Configuration.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
