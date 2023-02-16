@@ -3,3 +3,4 @@ pandas==1.5.3
 yfinance==0.2.9
 requests-cache==0.9.8
 boto3==1.26.67
+seaborn==0.12.2
