@@ -24,4 +24,7 @@ class Visualizaton:
 
 df = pd.read_csv("fetched.csv")
 visualization = Visualizaton()
-visualization.heatmap(df)
+df['Date'] = pd.to_datetime(df.Date,errors='ignore')
+df['Date'] = df['Date'].apply(lambda x : x.strftime('%Y-%m-%d'))
+df['Date'] = pd.to_datetime(df.Date,errors='ignore')
+visualization.linemap(df,'Date','Open')
