@@ -7,23 +7,23 @@ from dash import Dash, html, dcc
 import plotly.express as px
 import pandas as pd
 
+from dash import Dash, html
+import pandas as pd
+
 app = Dash(__name__)
 
-# assume you have a "long-form" data frame
-# see https://plotly.com/python/px-arguments/ for more options
-df = pd.DataFrame({
-    "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
-    "Amount": [4, 1, 2, 2, 4, 5],
-    "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
-})
 
-fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
+df = pd.read_csv('fetched.csv')
+
+fig = px.scatter(df, x="Close", y="Open",
+                 size="Volume", color="High", hover_name="Date",
+                 log_x=True, size_max=60)
 
 app.layout = html.Div(children=[
-    html.H1(children='Hello Dash'),
+    html.H1(children='DSCC-FC-MVP'),
 
     html.Div(children='''
-        Dash: A web application framework for your data.
+        Dash: A web application framework for your financial data (Apple & Samsung).
     '''),
 
     dcc.Graph(
