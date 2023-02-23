@@ -62,6 +62,6 @@ def view_graphs():
 
     if option == 3:
         visualization.heatmap(dataframe)
-    
+
 if __name__=="__main__":
     main()
