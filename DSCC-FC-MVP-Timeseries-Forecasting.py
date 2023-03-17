@@ -1,35 +1,34 @@
-# References: https://www.kaggle.com/code/prashant111/tutorial-time-series-forecasting-with-prophet
-#             https://www.phdata.io/blog/facebook-prophet-tutorial-time-series-forecasting/
-
 """This module provides a time-series-forecasting visualization"""
 
-from fbprophet import Prophet
-from fbprophet.plot import plot_plotly
-import plotly.offline as py
-py.init_notebook_mode()
-
-
+from prophet import Prophet
 import pandas as pd
-import numpy as np
-
 import matplotlib.pyplot as plt
 plt.style.use('fivethirtyeight')
 
+class ProphetPredict:
+    """The class provides method to use Facebook prophet for predictions"""
+    def get_predictions(self,dataframe,period_count):
+        """The method takes a dataframe with two columns date and values 
+        and the number of days to make a prediction and returns plots 
+        with predictions, overall trend and weekly seasonality"""
+        dataframe.columns = ['ds','y']
+        model = Prophet()
+        model.fit(df)
+        future = model.make_future_dataframe(periods=period_count)
+        predictions = model.predict(future)
+        print(predictions.tail())
+
+        print(predictions.columns)
+        model.plot(predictions)
+
+        model.plot_components(predictions)
+        plt.show()
 
 file = 'fetched.csv'
 df = pd.read_csv(file)
 df['Date'] = pd.to_datetime(df.Date,errors='ignore')
 df['Date'] = df['Date'].apply(lambda x : x.strftime('%Y-%m-%d'))
 df['Date'] = pd.to_datetime(df.Date,errors='ignore')
-# print(df)
-
-
-# Preview data
-#df.head()
-#df.info()
-#df.dtypes
-print(f'The minimum date is: ', min(df['Date'])) # Minimum date
-print(f'The maximum date is: ', max(df['Date'])) # Maximum date
 
 # Aggregate to the open data level
 open_stock = df
@@ -40,17 +39,5 @@ print('         Open Data')
 print(15 * '==')
 print(open_stock)
 
-# Split into train / test  (Aggregate open level)
-train = open_stock[open_stock['Date'] < '2021-01-04']
-test = open_stock[open_stock['Date'] >= '2021-12-29']
-
-# Model for open data
-# Ref: https://www.phdata.io/blog/facebook-prophet-tutorial-time-series-forecasting/
-
-
-# Visualize the data
-ax = df.set_index('Date').plot(figsize=(12, 8))
-ax.set_ylabel('Monthly Number of Stock Data')
-ax.set_xlabel('Year - Month')
-
-plt.show()
+predict = ProphetPredict()
+predict.get_predictions(open_stock,31)
