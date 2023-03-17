@@ -5,3 +5,4 @@ requests-cache==0.9.8
 boto3==1.26.67
 seaborn==0.12.2
 dash==2.8.1
+prophet==1.1.2
