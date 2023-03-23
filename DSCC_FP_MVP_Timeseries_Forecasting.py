@@ -13,7 +13,7 @@ class ProphetPredict:
         with predictions, overall trend and weekly seasonality"""
         dataframe.columns = ['ds','y']
         model = Prophet()
-        model.fit(df)
+        model.fit(dataframe)
         future = model.make_future_dataframe(periods=period_count)
         predictions = model.predict(future)
         print(predictions.tail())
@@ -22,7 +22,8 @@ class ProphetPredict:
         model.plot(predictions)
 
         model.plot_components(predictions)
-        plt.show()
+        # plt.show()
+        return predictions,model
 
 file = 'fetched.csv'
 df = pd.read_csv(file)
@@ -40,4 +41,5 @@ print(15 * '==')
 print(open_stock)
 
 predict = ProphetPredict()
-predict.get_predictions(open_stock,31)
+res = predict.get_predictions(open_stock,31)
+# print(res[1])
