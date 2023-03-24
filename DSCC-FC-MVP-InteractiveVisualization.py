@@ -3,27 +3,33 @@
 # visit http://127.0.0.1:8050/ in your web browser.
 
 """This module contains the interative dashboard visualization class"""
+# %matplotlib inline
+from io import BytesIO
+import base64
 import pandas as pd
 from dash import Dash, html, dcc, Input, Output
 import plotly.express as px
 import plotly.graph_objs as go
+import matplotlib.pyplot as plt
 from data_collection import DataCollection
+from DSCC_FP_MVP_Timeseries_Forecasting import ProphetPredict
 
 app = Dash(__name__)
 
-app.layout = html.Div(id='main-div',children=[
+app.layout = html.Div(id='main-div', style = {'text-align':'center'}, children=[
     html.H1(children='DSCC-FC-MVP'),
 
-    html.Div(children='Dash: A web application framework for your financial data.'),
+    html.H3(children='Dash: A web application framework for your financial data.'),
 
-    dcc.Dropdown(
+    html.Div(style = {'display':'inline-flex'}, children=[dcc.Dropdown(
         options = [
                     {'label':'Apple', 'value':'AAPL'},
                     {'label':'Samsung','value':'SMSN.IL'}
                 ],
         value = 'AAPL',
-        id='dropdown'
-    ),
+        id='dropdown',
+        style = {'width':'200px'}
+    )]),
 
     dcc.Graph(id='line-plot'),
 
@@ -31,7 +37,14 @@ app.layout = html.Div(id='main-div',children=[
 
     dcc.Graph(id='heatmap'),
 
-    dcc.Graph(id='histogram')
+    dcc.Graph(id='histogram'),
+
+    html.Div(style={'width':'700px','margin-left':'500px'}, children = [dcc.Slider(0, 365, 1, value=180, marks=None,
+    tooltip={"placement": "bottom", "always_visible": True}, id='day_slider')]),
+
+    html.Div(children = [html.Img(id = 'prediction_plot', src = '',style={'width':'800px'}),
+
+    html.Img(id = 'component_plot', src = '')], style={'display':'inline-flex'})
 ])
 
 @app.callback(
@@ -39,11 +52,14 @@ app.layout = html.Div(id='main-div',children=[
     Output('box-plot', 'figure'),
     Output('heatmap', 'figure'),
     Output('histogram', 'figure'),
-    Input('dropdown', 'value')
+    Output(component_id='prediction_plot', component_property='src'),
+    Output(component_id='component_plot', component_property='src'),
+    Input('dropdown', 'value'),
+    Input('day_slider','value')
 )
-def update_output(value):
+def update_output(dropdown_value,slider_value):
     collector = DataCollection()
-    data = collector.fetch(value)
+    data = collector.fetch(dropdown_value)
     collector.save(data)
 
     df = pd.read_csv('fetched.csv')
@@ -88,10 +104,29 @@ def update_output(value):
 
     histogram = px.histogram(df, x="Volume")
 
-    # fig1 = dcc.Graph(id='line-plot',figure=line_plot)
-    # fig2 = dcc.Graph(id='box-plot',figure=box_plot)
+    forecasting = ProphetPredict()
+    open_stock = df[['Date','Open']]
+    open_stock = open_stock.groupby(['Date','Open'], as_index=False).sum()
+    result = forecasting.get_predictions(open_stock,slider_value)
+    predictions = result[0]
+    model = result[1]
 
-    return line_plot, box_plot, heat_map, histogram
+    out_url = fig_to_uri(model.plot(predictions))
+
+    components_url = fig_to_uri(model.plot_components(predictions))
+
+    return line_plot, box_plot, heat_map, histogram, out_url, components_url
+
+def fig_to_uri(in_fig, close_all=False, **save_args):
+    """Save a figure as a URI"""
+    out_img = BytesIO()
+    in_fig.savefig(out_img, format='png', **save_args)
+    if close_all:
+        in_fig.clf()
+        plt.close('all')
+    out_img.seek(0)  # rewind file
+    encoded = base64.b64encode(out_img.read()).decode("ascii").replace("\n", "")
+    return f"data:image/png;base64,{encoded}"
 
 if __name__ == '__main__':
     app.run_server(debug=True)
