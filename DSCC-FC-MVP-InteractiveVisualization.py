@@ -39,10 +39,10 @@ app.layout = html.Div(id='main-div', style = {'text-align':'center'}, children=[
 
     dcc.Graph(id='histogram'),
 
-    dcc.Slider(0, 365, 1, value=180, marks=None,
-    tooltip={"placement": "bottom", "always_visible": True}, id='day_slider'),
+    html.Div(style={'width':'700px','margin-left':'400px'}, children = [dcc.Slider(0, 365, 1, value=180, marks=None,
+    tooltip={"placement": "bottom", "always_visible": True}, id='day_slider')]),
 
-    html.Div(children = [html.Img(id = 'prediction_plot', src = ''),
+    html.Div(children = [html.Img(id = 'prediction_plot', src = '',style={'width':'800px'}),
 
     html.Img(id = 'component_plot', src = '')], style={'display':'inline-flex'})
 ])
