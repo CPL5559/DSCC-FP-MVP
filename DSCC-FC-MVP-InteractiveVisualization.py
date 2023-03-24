@@ -39,6 +39,9 @@ app.layout = html.Div(id='main-div', style = {'text-align':'center'}, children=[
 
     dcc.Graph(id='histogram'),
 
+    dcc.Slider(0, 365, 1, value=180, marks=None,
+    tooltip={"placement": "bottom", "always_visible": True}, id='day_slider'),
+
     html.Div(children = [html.Img(id = 'prediction_plot', src = ''),
 
     html.Img(id = 'component_plot', src = '')], style={'display':'inline-flex'})
@@ -51,11 +54,12 @@ app.layout = html.Div(id='main-div', style = {'text-align':'center'}, children=[
     Output('histogram', 'figure'),
     Output(component_id='prediction_plot', component_property='src'),
     Output(component_id='component_plot', component_property='src'),
-    Input('dropdown', 'value')
+    Input('dropdown', 'value'),
+    Input('day_slider','value')
 )
-def update_output(value):
+def update_output(dropdown_value,slider_value):
     collector = DataCollection()
-    data = collector.fetch(value)
+    data = collector.fetch(dropdown_value)
     collector.save(data)
 
     df = pd.read_csv('fetched.csv')
@@ -103,7 +107,7 @@ def update_output(value):
     forecasting = ProphetPredict()
     open_stock = df[['Date','Open']]
     open_stock = open_stock.groupby(['Date','Open'], as_index=False).sum()
-    result = forecasting.get_predictions(open_stock,31)
+    result = forecasting.get_predictions(open_stock,slider_value)
     predictions = result[0]
     model = result[1]
 
