@@ -19,7 +19,7 @@ app = Dash(__name__)
 app.layout = html.Div(id='main-div', style = {'text-align':'center'}, children=[
     html.H1(children='DSCC-FC-MVP'),
 
-    html.H3(children='Dash: A web application framework for your financial data.'),
+    html.H3(children='Financial data dashboard.'),
 
     html.Div(style = {'display':'inline-flex'}, children=[dcc.Dropdown(
         options = [
@@ -28,19 +28,27 @@ app.layout = html.Div(id='main-div', style = {'text-align':'center'}, children=[
                 ],
         value = 'AAPL',
         id='dropdown',
-        style = {'width':'200px'}
+        style = {'width':'150px'}
     )]),
 
+    html.H3(children='The stock prices for Calendar year 2021 along with intraday maximum and minimum'),
     dcc.Graph(id='line-plot'),
-
+    
+    html.H3(children='Major statistical characteristics for Open and Close prices'),
     dcc.Graph(id='box-plot'),
 
+    html.H3(children='Heat map displaying the corelation between different prices and volume'),
     dcc.Graph(id='heatmap'),
 
+    html.H3(children='A view of distribution of the volume amount'),
     dcc.Graph(id='histogram'),
+
+    html.H3(children='Drag the slider below to change number of days!'),
 
     html.Div(style={'width':'700px','margin-left':'500px'}, children = [dcc.Slider(0, 365, 1, value=180, marks=None,
     tooltip={"placement": "bottom", "always_visible": True}, id='day_slider')]),
+
+    html.H3(id='slider-string',style={'text-align':'center'}),
 
     html.Div(children = [html.Img(id = 'prediction_plot', src = '',style={'width':'800px'}),
 
@@ -54,6 +62,7 @@ app.layout = html.Div(id='main-div', style = {'text-align':'center'}, children=[
     Output('histogram', 'figure'),
     Output(component_id='prediction_plot', component_property='src'),
     Output(component_id='component_plot', component_property='src'),
+    Output(component_id='slider-string', component_property='children'),
     Input('dropdown', 'value'),
     Input('day_slider','value')
 )
@@ -71,7 +80,7 @@ def update_output(dropdown_value,slider_value):
 
     line_plot = go.Figure([
         go.Scatter(
-            name='Measurement',
+            name='Open Price',
             x=df['Date'],
             y=df['Open'],
             mode='lines',
@@ -115,7 +124,9 @@ def update_output(dropdown_value,slider_value):
 
     components_url = fig_to_uri(model.plot_components(predictions))
 
-    return line_plot, box_plot, heat_map, histogram, out_url, components_url
+    slider_string = f'Price prediction for {slider_value} days'
+
+    return line_plot, box_plot, heat_map, histogram, out_url, components_url, slider_string
 
 def fig_to_uri(in_fig, close_all=False, **save_args):
     """Save a figure as a URI"""
